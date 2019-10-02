@@ -19,9 +19,9 @@ trait ContextService extends Service {
   /**
     * Example: curl http://localhost:9000/api/context/:id/save
     */
-  def saveContextRegistry(id: String): ServiceCall[ContextRegistry, Done]
+  def saveContextRegistry(user_id: String): ServiceCall[RawContextRegistry, Done]
 
-  def getContextObject(id: String): ServiceCall[NotUsed, List[ContextRegistry]]
+  def getContextObject(user_id: String): ServiceCall[NotUsed, List[ContextRegistry]]
 
   override final def descriptor: Descriptor = {
     import Service._
@@ -39,13 +39,127 @@ trait ContextService extends Service {
 /**
   * The context object class.
   */
-case class ContextRegistry(id: String, message: String)
+// TODO - Connect frontend service
+// TODO - Que la base de datos no persista el contexto sino que lo guarde en memoria
+// TODO Add noise and accelerometer and connectivity from client
+case class RawContextRegistry(timestamp: String,
+                           ruido: Double, luz: Double, lat: Double, lon: Double,
+                           conectividad: String, acc: Double, canal: String)
+
+object RawContextRegistry {
+  implicit val format: Format[RawContextRegistry] = Json.format
+}
+
+case class ContextRegistry(timestamp: WeekSection,
+                              ruido: Level, luz: Level, loc: Location,
+                              conectividad: Level, move: Move, channel: Channel)
 
 object ContextRegistry {
-  /**
-    * Format for converting context objects to and from JSON.
-    *
-    * This will be picked up by a Lagom implicit conversion from Play's JSON format to Lagom's message serializer.
-    */
   implicit val format: Format[ContextRegistry] = Json.format
+}
+
+
+sealed abstract class WeekSection
+case class Weekday(weekday: String) extends WeekSection
+case class Weekend(weekend: String) extends WeekSection
+
+object WeekSection {
+  implicit val format: Format[WeekSection] = Json.format
+}
+
+object Weekday {
+  implicit val format: Format[Weekday] = Json.format
+}
+
+object Weekend {
+  implicit val format: Format[Weekend] = Json.format
+}
+
+sealed abstract class Level
+case class Alto(alto: String) extends Level
+case class Medio(medio: String) extends Level
+case class Bajo(bajo: String) extends Level
+case class UndefinedLevel(undefined: String) extends Level
+
+object Level {
+  implicit val format: Format[Level] = Json.format
+}
+
+object Alto {
+  implicit val format: Format[Alto] = Json.format
+}
+
+object Medio {
+  implicit val format: Format[Medio] = Json.format
+}
+
+object Bajo {
+  implicit val format: Format[Bajo] = Json.format
+}
+
+object UndefinedLevel {
+  implicit val format: Format[UndefinedLevel] = Json.format
+}
+
+sealed abstract class Location
+case class House(house: String) extends Location
+case class School(school: School) extends Location
+case class UndefinedLocation(undefined: String) extends Location
+
+object Location {
+  implicit val format: Format[Location] = Json.format
+}
+
+object House {
+  implicit val format: Format[House] = Json.format
+}
+
+object School {
+  implicit val format: Format[School] = Json.format
+}
+
+object UndefinedLocation {
+  implicit val format: Format[UndefinedLocation] = Json.format
+}
+
+sealed abstract class Move
+case class Moving(moving: String) extends Move
+case class Quiet(quiet: String) extends Move
+case class UndefinedMove(undefined: String) extends Move
+
+object Move {
+  implicit val format: Format[Move] = Json.format
+}
+
+object Moving {
+  implicit val format: Format[Moving] = Json.format
+}
+
+object Quiet {
+  implicit val format: Format[Quiet] = Json.format
+}
+
+object UndefinedMove {
+  implicit val format: Format[UndefinedMove] = Json.format
+}
+
+sealed abstract class Channel
+case class Email(email: String) extends Channel
+case class Web(web: String) extends Channel
+case class UndefinedChannel(undefined: String) extends Channel
+
+object Channel {
+  implicit val format: Format[Channel] = Json.format
+}
+
+object Email {
+  implicit val format: Format[Email] = Json.format
+}
+
+object Web {
+  implicit val format: Format[Web] = Json.format
+}
+
+object UndefinedChannel {
+  implicit val format: Format[UndefinedChannel] = Json.format
 }

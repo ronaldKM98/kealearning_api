@@ -16,10 +16,12 @@ class ContextEntity extends PersistentEntity {
   override type Event = ContextEvent
   override type State = ContextObjectState
 
-  override def initialState: ContextObjectState = ContextObjectState("1", List.empty, "timestamp")
+  override def initialState: ContextObjectState =
+    ContextObjectState("0", List.empty, LocalDateTime.now().toString)
 
   override def behavior: Behavior = {
     case ContextObjectState(_, _, _) => Actions().onCommand[SaveContextRegistry, Done] {
+
       // Command handler for the [[SaveContextRegistry]] command
       case (SaveContextRegistry(contextRegistry), ctx, _) =>
         ctx.thenPersist(
@@ -36,7 +38,6 @@ class ContextEntity extends PersistentEntity {
       // Event handler for the [[ContextRegistrySaved]] event
       case (ContextRegistrySaved(contextRegistry), state) =>
         ContextObjectState(state.id, contextRegistry :: state.registry, LocalDateTime.now().toString)
-
     }
   }
 }
