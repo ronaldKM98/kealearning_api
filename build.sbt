@@ -8,14 +8,13 @@ scalaVersion in ThisBuild := "2.12.8"
 // Dependencies
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
-val nscalaTime = "com.github.nscala-time" % "nscala-time_2.12" % "2.22.0"
 
 lazy val `kealearning` = (project in file("."))
   .aggregate(`kealearning-api`, `kealearning-impl`, `kealearning-stream-api`,
     `kealearning-stream-impl`, `context-api`, `context-impl`)
 
 
-// Development enviroment configuration 
+// Development enviroment configuration
 lagomCassandraCleanOnStart in ThisBuild := true
 
 // Micro services definition
@@ -81,7 +80,6 @@ lazy val `context-impl` = (project in file("context-impl"))
       lagomScaladslPubSub,
       macwire,
       scalaTest,
-      nscalaTime
     )
   )
   .dependsOn(`context-api`)
